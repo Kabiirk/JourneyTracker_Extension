@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import './popup.css';
-import Login from './Login';
+import { Grid } from '@mui/material';
+import { useEffect, useState } from 'react';
 import Home from './Home';
+import Login from './Login';
+import './popup.css';
 
 function mergeArraysToMap(
   keys: string[],
@@ -34,46 +35,44 @@ const Popup = () => {
 
   const [data, setData] = useState<IURL[]>([]);
 
+  chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
+    console.log(session, 'sesssion');
+    if (session) {
+      setIsLoggedIn(true);
+      //user is logged in
+    } else {
+      setIsLoggedIn(false);
 
-    chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
-      console.log(session, 'sesssion');
+      //no session means user not logged in
+      // chrome.tabs.create({
+      //   url: '<link to your login page>'
+      // });
+    }
+  });
+
+  useEffect(() => {
+    // Check if the user is already logged in
+    chrome.storage.local.get('session', ({ session }) => {
       if (session) {
         setIsLoggedIn(true);
-        //user is logged in
-      } else {
-        setIsLoggedIn(false);
-
-        //no session means user not logged in
-        // chrome.tabs.create({
-        //   url: '<link to your login page>'
-        // });
       }
     });
 
+    // Listen for messages from background script
+    chrome.runtime.onMessage.addListener(message => {
+      if (message.action === 'AUTH_CHECK') {
+        setIsLoggedIn(message.session ? true : false);
+        if (message.session) {
+          chrome.storage.local.set({ session: message.session });
+        } else {
+          chrome.storage.local.remove('session');
+        }
+      }
+    });
 
-   useEffect(() => {
-     // Check if the user is already logged in
-     chrome.storage.local.get('session', ({ session }) => {
-       if (session) {
-         setIsLoggedIn(true);
-       }
-     });
-
-     // Listen for messages from background script
-     chrome.runtime.onMessage.addListener(message => {
-       if (message.action === 'AUTH_CHECK') {
-         setIsLoggedIn(message.session ? true : false);
-         if (message.session) {
-           chrome.storage.local.set({ session: message.session });
-         } else {
-           chrome.storage.local.remove('session');
-         }
-       }
-     });
-
-     // Update UI with recorded texts
-     updateUI();
-   }, []);
+    // Update UI with recorded texts
+    updateUI();
+  }, []);
 
   useEffect(() => {
     // Listen for messages from background script
@@ -112,13 +111,28 @@ const Popup = () => {
     console.log(recordedURLs);
   };
 
-  if(!isLoggedIn){
-    return <Login />
+  if (!isLoggedIn) {
+    return (
+      <Grid
+        style={{
+          height: 'auto',
+          minHeight: 200,
+          justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          background: '#f5f5f5'
+        }}
+        container
+      >
+        <Login />
+      </Grid>
+    );
   }
 
-
   return (
-   <Home />
+    <Grid style={{ height: 'auto', width: 'auto' }} container>
+      <Home />
+    </Grid>
   );
 };
 

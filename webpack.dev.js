@@ -1,7 +1,19 @@
-const {merge} = require('webpack-merge')
-const common = require('./webpack.common.js')
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
     mode: 'development',
-    devtool: 'cheap-module-source-map',
-})
+    devtool: 'inline-source-map',
+    devServer: {
+        client: {
+            logging: 'info',
+            overlay: true,
+        },
+        compress: true,
+        open: true,
+        static: './dist',
+    },
+    stats: {
+        errorDetails: true,
+    },
+});
