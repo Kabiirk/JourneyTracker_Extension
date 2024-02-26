@@ -1,4 +1,4 @@
-import React from 'react';
+import { Button, Typography } from '@mui/material';
 
 const Login = () => {
   const handleClick = () => {
@@ -6,18 +6,16 @@ const Login = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
-      <div className='bg-white shadow-md rounded p-8 max-w-xs text-center'>
-        <h1 className='text-2xl font-semibold mb-6'>User Journey</h1>
-        <button
-          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+    <>
+      <Typography variant='h5'>Welcome to User Journey</Typography>
+        <Button
+          variant='contained'
           type='button'
           onClick={handleClick}
         >
           Login to Start Using
-        </button>
-      </div>
-    </div>
+        </Button>
+    </>
   );
 };
 

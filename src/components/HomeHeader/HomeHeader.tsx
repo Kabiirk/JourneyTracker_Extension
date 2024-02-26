@@ -1,5 +1,4 @@
-import { Avatar, Button, Grid, Stack, Typography } from '@mui/material';
-import React from 'react';
+import { Avatar, Button, Stack, Typography } from '@mui/material';
 
 const HomeHeader = () => {
   return (
