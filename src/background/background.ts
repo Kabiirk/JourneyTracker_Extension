@@ -1,42 +1,58 @@
-// chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-//     console.log(msg);
-//     console.log(sender);
-//     sendResponse("Front the background Script");
-// })
 
-function recordText(info, tab) {
-    console.log([info.frameUrl, info.selectionText]);
-    // console.log(tab);
-    // const selectedText = window.getSelection().toString().trim();
-    const selectedText = "";
-    
-    // Check if selected text is not empty
-    if (info.selectionText !== "") {
-      // Store the selected text locally
-      chrome.storage.local.get({ recordedTexts: [], recordedURLs:[] }, function (result) {
-        const recordedTexts = result.recordedTexts;
-        const recordedURLs = result.recordedURLs;
-        recordedTexts.push(info.selectionText);
-        recordedURLs.push(info.frameUrl);
-        chrome.storage.local.set({ recordedTexts });
-        chrome.storage.local.set({ recordedURLs });
-      });
-  
-      // Notify the popup to update UI
-    //   chrome.runtime.sendMessage({ action: "updateUI" });
-    }
+export interface IJourney {
+  id: string;
+  label: string;
+  recordedTexts:
+    | {
+        text: string;
+        url: string;
+        createdAt: string;
+      }[]
+    | [];
 }
-  
-// Create context menu item
+
+function recordText(
+  info: chrome.contextMenus.OnClickData,
+  tab: chrome.tabs.Tab
+) {
+  const selectedText = info.selectionText.trim();
+  chrome.storage.local.get('selectedJourney', function (result) {
+    console.log(result);
+    const journey = result.selectedJourney;
+    const recordedTextObj = {
+      text: selectedText,
+      url: tab.url,
+      createdAt: new Date().toISOString()
+    };
+    const updatedRecordedText = {
+      ...journey,
+      recordedTexts: [recordedTextObj, ...journey.recordedTexts]
+    };
+    chrome.storage.local.get('journeys', function (result) {
+      const journeys = result.journeys;
+      if (journeys) {
+        const updatedJourneys = journeys.map((j: IJourney) => {
+          if (j.id === journey.id) {
+            return updatedRecordedText;
+          }
+          return j;
+        });
+        chrome.storage.local.set({ journeys: updatedJourneys });
+      }
+    });
+
+    chrome.storage.local.set({ selectedJourney: updatedRecordedText });
+  });
+}
+
 chrome.contextMenus.create({
-    id: "record-text",
-    title: "Record Text",
-    contexts: ["selection"],
-    // onclick: recordText,
+  id: 'record-text',
+  title: 'Record Text',
+  contexts: ['selection']
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
-        recordText(info, tab);
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+  recordText(info, tab);
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, onSuccess) {
@@ -46,16 +62,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, onSuccess) {
   })
     .then(response => response.json())
     .then(session => {
-      if (Object.keys(session).length > 0) {
-        onSuccess(session);
-      } else {
-        onSuccess(null);
-      }
+      onSuccess(Object.keys(session).length > 0 ? session : null);
     })
     .catch(err => {
       console.error(err);
       onSuccess(null);
     });
 
-  return true; // Will respond asynchronously.
+  return true;
 });
+
+export {};
