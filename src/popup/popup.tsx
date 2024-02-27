@@ -1,24 +1,23 @@
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useJourney } from '../hooks/useJourney';
 import Home from './Home';
 import Login from './Login';
 import './popup.css';
 
 
-
 const Popup = () => {
-  const [recordedTexts, setRecordedTexts] = useState<string[]>([]);
-  const [recordedURLs, setRecordedURLs] = useState<string[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {journeys, addNewJourney, updateSelectedJourney, selectedJourney} = useJourney();
+  const [user, setuser] = useState<string>("")
 
-  console.log(recordedTexts, recordedURLs, 'recordedTexts')
-
-
+  console.log(journeys, 'journeys');
   chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
     console.log(session, 'sesssion');
     if (session) {
       setIsLoggedIn(true);
       //user is logged in
+      setuser(session.user.email);
     } else {
       setIsLoggedIn(false);
 
@@ -50,34 +49,10 @@ const Popup = () => {
     });
 
     // Update UI with recorded texts
-    updateUI();
+    // updateUI();
   }, []);
 
-  useEffect(() => {
-    // Listen for messages from background script
-    chrome.runtime.onMessage.addListener(message => {
-      if (message.action === 'updateUI') {
-        updateUI();
-      }
-    });
 
-    // Update UI with recorded texts
-    updateUI();
-  }, []);
-
-  const updateUI = () => {
-    chrome.storage.local.get(
-      { recordedTexts: [], recordedURLs: [] },
-      result => {
-        const texts = result.recordedTexts;
-        const URLs = result.recordedURLs;
-        setRecordedTexts(texts);
-        setRecordedURLs(URLs);
-        console.log(texts);
-        console.log(URLs);
-      }
-    );
-  };
 
 
   if (!isLoggedIn) {
@@ -100,7 +75,13 @@ const Popup = () => {
 
   return (
     <Grid style={{ height: 'auto', width: 'auto' }} container>
-      <Home />
+      <Home
+        addNewJourney={addNewJourney}
+        journeys={journeys}
+        updateSelectedJourney={updateSelectedJourney}
+        selectedJourney={selectedJourney}
+        user={user}
+      />
     </Grid>
   );
 };

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import HomeHeader from '../components/HomeHeader';
 
 test('renders HomeHeader component', () => {
+  // @ts-ignore
   render(<HomeHeader />);
 
   // Ensure that the avatar is present

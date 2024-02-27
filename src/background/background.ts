@@ -1,27 +1,48 @@
-interface RecordedData {
-  recordedTexts: string[];
-  recordedURLs: string[];
+
+export interface IJourney {
+  id: string;
+  label: string;
+  recordedTexts:
+    | {
+        text: string;
+        url: string;
+        createdAt: string;
+      }[]
+    | [];
 }
 
 function recordText(
   info: chrome.contextMenus.OnClickData,
   tab: chrome.tabs.Tab
 ) {
-  console.log([info.frameUrl, info.selectionText]);
   const selectedText = info.selectionText.trim();
-
-  if (selectedText !== '') {
-    chrome.storage.local.get(
-      { recordedTexts: [], recordedURLs: [] },
-      function (result: RecordedData) {
-        const recordedTexts = result.recordedTexts;
-        const recordedURLs = result.recordedURLs;
-        recordedTexts.push(selectedText);
-        recordedURLs.push(info.frameUrl);
-        chrome.storage.local.set({ recordedTexts, recordedURLs });
+  chrome.storage.local.get('selectedJourney', function (result) {
+    console.log(result);
+    const journey = result.selectedJourney;
+    const recordedTextObj = {
+      text: selectedText,
+      url: tab.url,
+      createdAt: new Date().toISOString()
+    };
+    const updatedRecordedText = {
+      ...journey,
+      recordedTexts: [recordedTextObj, ...journey.recordedTexts]
+    };
+    chrome.storage.local.get('journeys', function (result) {
+      const journeys = result.journeys;
+      if (journeys) {
+        const updatedJourneys = journeys.map((j: IJourney) => {
+          if (j.id === journey.id) {
+            return updatedRecordedText;
+          }
+          return j;
+        });
+        chrome.storage.local.set({ journeys: updatedJourneys });
       }
-    );
-  }
+    });
+
+    chrome.storage.local.set({ selectedJourney: updatedRecordedText });
+  });
 }
 
 chrome.contextMenus.create({
@@ -50,6 +71,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, onSuccess) {
 
   return true;
 });
+
+export {};
+
+export {};
 
 
 
