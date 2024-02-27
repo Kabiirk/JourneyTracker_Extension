@@ -1,6 +1,10 @@
 import { Avatar, Button, Stack, Typography } from '@mui/material';
 
-const HomeHeader = () => {
+interface HomeHeaderProps {
+  user: string;
+}
+
+const HomeHeader = ({ user } : HomeHeaderProps) => {
   return (
     <Stack
       spacing={2}
@@ -14,7 +18,7 @@ const HomeHeader = () => {
     >
       <Stack spacing={1} direction='row' alignItems='center'>
         <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
-        <Typography variant='h6'>Hi Talal</Typography>
+        <Typography variant='h6'>Hi {user}</Typography>
       </Stack>
 
       <Button variant='contained' color='primary'>
