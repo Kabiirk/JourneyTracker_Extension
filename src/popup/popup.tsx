@@ -4,36 +4,15 @@ import Home from './Home';
 import Login from './Login';
 import './popup.css';
 
-function mergeArraysToMap(
-  keys: string[],
-  values: string[]
-): { [key: string]: string } {
-  if (keys.length !== values.length) {
-    throw new Error('The number of keys and values must be the same.');
-  }
 
-  // Use reduce to create the key/value map
-  const mergedMap: { [key: string]: string } = keys.reduce(
-    (map, key, index) => {
-      map[key] = values[index];
-      return map;
-    },
-    {}
-  );
 
-  return mergedMap;
-}
-
-interface IURL {
-  url: string;
-  text: string[];
-}
 const Popup = () => {
   const [recordedTexts, setRecordedTexts] = useState<string[]>([]);
   const [recordedURLs, setRecordedURLs] = useState<string[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [data, setData] = useState<IURL[]>([]);
+  console.log(recordedTexts, recordedURLs, 'recordedTexts')
+
 
   chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
     console.log(session, 'sesssion');
@@ -100,16 +79,6 @@ const Popup = () => {
     );
   };
 
-  const clearUI = () => {
-    chrome.storage.local
-      .set({ recordedTexts: [], recordedURLs: [] })
-      .then(() => {});
-    updateUI();
-  };
-  const logResults = () => {
-    console.log(recordedTexts);
-    console.log(recordedURLs);
-  };
 
   if (!isLoggedIn) {
     return (
