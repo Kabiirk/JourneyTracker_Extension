@@ -23,7 +23,36 @@ afterEach(async () => {
   browser = undefined;
 });
 
-test('popup renders correctly', async () => {
-  const page = await browser.newPage();
-  await page.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
-})
+describe('JourneyList component', () => {
+  // Test 1
+  test('popup renders correctly', async () => {
+    const page = await browser.newPage();
+    await page.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
+
+    const root = await page.$('html');
+    const children = await root.$$('button');
+
+    expect(children.length).toBe(1);
+  });
+
+  // Test 2
+  test('Login Works as expected', async () => {
+    const page = await browser.newPage();
+    await page.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
+
+    // click and wait for navigation
+    await Promise.all(
+      [
+        page.click('.MuiButtonBase-root'),
+        // page.waitForNavigation({ waitUntil: 'networkidle0' }),
+      ]
+    )
+    // const currentUrl : string = page.url();
+    // console.log(currentUrl);
+    // expect(currentUrl).toMatch(/http.*login/);
+    // await Promise.all([
+      
+    //   page.waitForNavigation({ waitUntil: 'networkidle0' }),
+    // ]);
+  });
+});
