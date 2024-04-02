@@ -41,18 +41,21 @@ describe('JourneyList component', () => {
     await page.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
 
     // click and wait for navigation
-    await Promise.all(
-      [
-        page.click('.MuiButtonBase-root'),
-        // page.waitForNavigation({ waitUntil: 'networkidle0' }),
-      ]
-    )
-    // const currentUrl : string = page.url();
-    // console.log(currentUrl);
-    // expect(currentUrl).toMatch(/http.*login/);
-    // await Promise.all([
-      
-    //   page.waitForNavigation({ waitUntil: 'networkidle0' }),
-    // ]);
+    // await Promise.all(
+    //   [
+    //     page.click('.MuiButtonBase-root'),
+    //     // page.waitForNavigation({ waitUntil: 'networkidle0' }),
+    //   ]
+    // )
+    const [url] = await Promise.all([
+      new Promise((resolve, reject) => {
+        browser.once('targetcreated', (target : any) => { resolve(target.url()); });
+      }),
+      page.click('.MuiButtonBase-root'),
+    ]);
+    
+    // console.log(url);
+    const currentUrl = url;
+    expect(currentUrl).toMatch(/http.*login/);
   });
 });
