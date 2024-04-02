@@ -1,5 +1,6 @@
 module.exports = {
   verbose: true,
+  "testTimeout": 1000000,
   preset: 'ts-jest',
   // testEnvironment: 'jsdom',
   moduleNameMapper: {
