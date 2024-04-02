@@ -1,5 +1,5 @@
 import * as puppeteer from "puppeteer";
-import '@testing-library/jest-dom';
+// import '@testing-library/jest-dom';
 
 // Replace with your absolute path of dist/ 
 const EXTENSION_PATH = 'C:/Users/kabii/Desktop/FOLDERS/UWATERLOO/2 - Sem 2 - Winter\'24/ECE 651/Project/JourneyTracker_Extension/dist';
