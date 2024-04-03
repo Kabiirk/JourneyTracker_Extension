@@ -24,6 +24,7 @@ export default function JourneyList({
   const [title, setTitle] = useState('');
 
 
+
   useEffect(() => {
     if(!journeys  || journeys.length === 0) {
       setIsAdd(true)
