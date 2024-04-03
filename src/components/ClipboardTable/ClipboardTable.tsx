@@ -15,7 +15,6 @@ interface ClipboardTableProps {
 export default function ClipboardTable({
   selectedJourney
 }: ClipboardTableProps) {
-  // console.log('selectedJourney', selectedJourney);
   return (
     <Stack>
       <TableContainer component={Paper}>
