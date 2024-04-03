@@ -23,7 +23,7 @@ export default function JourneyList({
   const [isAdd, setIsAdd] = useState(false);
   const [title, setTitle] = useState('');
 
-  // console.log('selected journey check', selectedJourney);
+
 
   useEffect(() => {
     if(!journeys  || journeys.length === 0) {
