@@ -9,6 +9,7 @@ module.exports = {
     // '\\.(css|less)$': '<rootDir>/src/__mocks__/styleMock.ts',
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  collectCoverage: true,
   collectCoverageFrom: ['**/*.{ts,tsx}', '!**/*.d.ts', '!**/node_modules/**', '!**/vendor/**'],
   coverageThreshold: {
     global: {
