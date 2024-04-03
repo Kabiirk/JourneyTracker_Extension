@@ -11,6 +11,7 @@ interface HomeProps {
   updateSelectedJourney: (journeyId: string) => void;
   selectedJourney: IJourney;
   user: string;
+  clearTable: () => void;
 }
 
 const Home = ({
@@ -18,7 +19,8 @@ const Home = ({
   journeys,
   updateSelectedJourney,
   selectedJourney,
-  user
+  user,
+  clearTable
 }: HomeProps) => {
   return (
     <Grid container>
@@ -31,13 +33,14 @@ const Home = ({
           journeys={journeys}
           updateSelectedJourney={updateSelectedJourney}
           selectedJourney={selectedJourney}
+          
         />
       </Grid>
       <Grid item xs={12}>
         <ClipboardTable selectedJourney={selectedJourney} />
       </Grid>
       <Grid item xs={12}>
-        <ActionButtons />
+        <ActionButtons clearTable={clearTable} />
       </Grid>
     </Grid>
   );

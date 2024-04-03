@@ -1,10 +1,10 @@
-import TextField from '@mui/material/TextField';
+import AddIcon from '@mui/icons-material/Add';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import { Stack } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import { Stack } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import CancelIcon from '@mui/icons-material/Cancel';
+import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
 import { IJourney } from '../../hooks/useJourney';
 interface JourneyListProps {
@@ -23,15 +23,19 @@ export default function JourneyList({
   const [isAdd, setIsAdd] = useState(false);
   const [title, setTitle] = useState('');
 
-  console.log('selected journey check', selectedJourney);
-
   useEffect(() => {
     if(!journeys  || journeys.length === 0) {
       setIsAdd(true)
     }
+    else {
+      setIsAdd(false)
+    }
 
   }
-  , [journeys]);
+  , [journeys, selectedJourney]);
+
+
+  
   
   return (
     <Stack

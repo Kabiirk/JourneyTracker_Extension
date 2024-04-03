@@ -5,11 +5,16 @@ import Home from './Home';
 import Login from './Login';
 import './popup.css';
 
-
 const Popup = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const {journeys, addNewJourney, updateSelectedJourney, selectedJourney} = useJourney();
-  const [user, setuser] = useState<string>("")
+  const {
+    journeys,
+    updateSelectedJourney,
+    selectedJourney,
+    addNewJourneyInDb,
+    clearSelectedJourneyRecordedTexts
+  } = useJourney();
+  const [user, setuser] = useState<string>('');
 
   console.log(journeys, 'journeys');
   chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
@@ -52,9 +57,6 @@ const Popup = () => {
     // updateUI();
   }, []);
 
-
-
-
   if (!isLoggedIn) {
     return (
       <Grid
@@ -76,11 +78,12 @@ const Popup = () => {
   return (
     <Grid style={{ height: 'auto', width: 'auto' }} container>
       <Home
-        addNewJourney={addNewJourney}
+        addNewJourney={addNewJourneyInDb}
         journeys={journeys}
         updateSelectedJourney={updateSelectedJourney}
         selectedJourney={selectedJourney}
         user={user}
+        clearTable={clearSelectedJourneyRecordedTexts}
       />
     </Grid>
   );

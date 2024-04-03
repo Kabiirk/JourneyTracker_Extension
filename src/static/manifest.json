@@ -11,9 +11,7 @@
     "permissions": [
         "tabs",
         "contextMenus",
-        "bookmarks",
-        "storage",
-        "identity"
+        "storage"
     ],
     
     "icons": {

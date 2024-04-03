@@ -6,6 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { useEffect } from 'react';
 import { IJourney } from '../../background/background';
 
 interface ClipboardTableProps {
@@ -15,7 +16,12 @@ interface ClipboardTableProps {
 export default function ClipboardTable({
   selectedJourney
 }: ClipboardTableProps) {
-  console.log('selectedJourney', selectedJourney);
+
+
+  useEffect(() => {
+    // console.log('selectedJourney', selectedJourney);
+  }
+  , [selectedJourney]);
   return (
     <Stack>
       <TableContainer component={Paper}>

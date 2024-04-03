@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import ActionButtons from '../components/ActionButtons';
 
 test('renders ActionButtons component', () => {
+  // @ts-ignore
   render(<ActionButtons />);
 
   // Ensure that the 'Add Journey' button is present

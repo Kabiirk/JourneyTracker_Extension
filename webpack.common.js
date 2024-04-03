@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: {
@@ -26,7 +26,11 @@ module.exports = {
             'popup',
             'options',
             'newTab'
-        ])
+        ]),
+        // environmental variables
+        new Dotenv({
+            path: `./.env`, // Load different .env files based on the environment
+        }),
     ],
     module: {
         rules: [
