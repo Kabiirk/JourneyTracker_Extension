@@ -59,6 +59,7 @@ export default function JourneyList({
         <Autocomplete
           disablePortal
           id='combo-box-demo'
+          data-testid='auto-complete'
           options={journeys}
           sx={{ width: 300 }}
           getOptionLabel={option => option && option.label}
@@ -85,6 +86,7 @@ export default function JourneyList({
         isAdd && journeys && journeys.length > 0 &&  (
           <Button
             variant='contained'
+            data-testid='cancel-button'
             color='error'
             onClick={() => setIsAdd(!isAdd)}
           >
@@ -96,6 +98,8 @@ export default function JourneyList({
       <Button
         variant='contained'
         color='primary'
+        data-testid='add-button'
+        aria-label='edit'
         onClick={() => {
           setIsAdd(!isAdd);
           if (isAdd && title.length > 0) {
