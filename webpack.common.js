@@ -1,9 +1,8 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const tailwindcss = require('tailwindcss')
-const autoprefixer = require('autoprefixer')
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: {
@@ -11,41 +10,7 @@ module.exports = {
         options: path.resolve('src/options/index.tsx'),
         background: path.resolve('src/background/background.ts'),
         contentScript: path.resolve('src/contentScript/contentScript.ts'),
-        newTab: path.resolve('src/tabs/index.tsx'),
-    },
-    module: {
-        rules: [
-            {
-                use: 'ts-loader',
-                test: /\.tsx?$/,
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.css$/i,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            importLoaders: 1,
-                        },
-                    },
-                    {
-                        loader: 'postcss-loader', // postcss loader needed for tailwindcss
-                        options: {
-                            postcssOptions: {
-                                ident: 'postcss',
-                                plugins: [tailwindcss, autoprefixer],
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                type: 'assets/resource',
-                test: /\.(png|jpg|jpeg|gif|woff|woff2|tff|eot|svg)$/,
-            },
-        ]
+        // newTab: path.resolve('src/tabs/index.tsx'),
     },
     "plugins": [
         new CleanWebpackPlugin({
@@ -61,10 +26,35 @@ module.exports = {
             'popup',
             'options',
             'newTab'
-        ])
+        ]),
+        // environmental variables
+        new Dotenv({
+            path: `./.env`, // Load different .env files based on the environment
+        }),
     ],
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+                type: 'asset/resource',
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                type: 'asset/resource',
+            },
+        ],
+    },
     resolve: {
-        extensions: ['.tsx', '.js', '.ts']
+        extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
         filename: '[name].js',

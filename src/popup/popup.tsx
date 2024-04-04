@@ -1,88 +1,92 @@
-import React, { useEffect, useState } from "react";
-import './popup.css'
-
-function mergeArraysToMap(keys: string[], values: string[]): { [key: string]: string } {
-    if (keys.length !== values.length) {
-      throw new Error("The number of keys and values must be the same.");
-    }
-  
-    // Use reduce to create the key/value map
-    const mergedMap: { [key: string]: string } = keys.reduce((map, key, index) => {
-      map[key] = values[index];
-      return map;
-    }, {});
-  
-    return mergedMap;
-  }
+import { Grid } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useJourney } from '../hooks/useJourney';
+import Home from './Home';
+import Login from './Login';
+import './popup.css';
 
 const Popup = () => {
-    const [recordedTexts, setRecordedTexts] = useState<string[]>([]);
-    const [recordedURLs, setRecordedURLs] = useState<string[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {
+    journeys,
+    updateSelectedJourney,
+    selectedJourney,
+    addNewJourneyInDb,
+    clearSelectedJourneyRecordedTexts
+  } = useJourney();
+  const [user, setuser] = useState<string>('');
 
-    useEffect(() => {
-        // Listen for messages from background script
-        chrome.runtime.onMessage.addListener((message) => {
-            if (message.action === 'updateUI') {
-                updateUI();
-            }
-        });
+  console.log(journeys, 'journeys');
+  chrome.runtime.sendMessage({ action: 'AUTH_CHECK' }, session => {
+    console.log(session, 'sesssion');
+    if (session) {
+      setIsLoggedIn(true);
+      //user is logged in
+      setuser(session.user.email);
+    } else {
+      setIsLoggedIn(false);
 
-        // Update UI with recorded texts
-        updateUI();
-    }, []);
-
-    const updateUI = () => {
-        chrome.storage.local.get({ recordedTexts: [], recordedURLs:[] }, (result) => {
-            const texts = result.recordedTexts;
-            const URLs = result.recordedURLs;
-            setRecordedTexts(texts);
-            setRecordedURLs(URLs);
-            console.log(texts);
-            console.log(URLs);
-        });
-    };
-
-    const clearUI = () => {
-        chrome.storage.local.set({ recordedTexts: [], recordedURLs: [] }).then(() => {
-        })
-        updateUI();
+      //no session means user not logged in
+      // chrome.tabs.create({
+      //   url: '<link to your login page>'
+      // });
     }
-    const logResults = () => {
-        console.log(recordedTexts);
-        console.log(recordedURLs);
-    }
+  });
 
+  useEffect(() => {
+    // Check if the user is already logged in
+    chrome.storage.local.get('session', ({ session }) => {
+      if (session) {
+        setIsLoggedIn(true);
+      }
+    });
+
+    // Listen for messages from background script
+    chrome.runtime.onMessage.addListener(message => {
+      if (message.action === 'AUTH_CHECK') {
+        setIsLoggedIn(message.session ? true : false);
+        if (message.session) {
+          chrome.storage.local.set({ session: message.session });
+        } else {
+          chrome.storage.local.remove('session');
+        }
+      }
+    });
+
+    // Update UI with recorded texts
+    // updateUI();
+  }, []);
+
+  if (!isLoggedIn) {
     return (
-        <div className="bg-green-400">
-            {/* <h1 className="text-4xl text-blue-400">Hello World</h1> */}
-            <div className="flex gap-2">
-                <button className="bg-orange-400" onClick={clearUI}>Clear</button>
-                <button className="bg-orange-400" onClick={logResults}>Log Texts</button>
-            </div>
-            <div className="w-full h-[400px] overflow-y-scroll bg-red-300">
-                <h2>Recorded Texts</h2>
-                
-                <ul>
-                    <li>
-                        <div className="w-[100%] max-h-8 mb-1 flex flex-auto gap-1 text-center font-bold">
-                            <span className="bg-blue-400 w-[10%]">S.No</span>
-                            <span className="bg-blue-500 w-[40%]">URL</span>
-                            <span className="bg-blue-600 w-[50%]">Text</span>
-                        </div>
-                    </li>
-                    {recordedTexts.map((text, index) => (
-                        <li key={index+1}>
-                            <div className="w-[100%] max-h-8 mb-1 flex flex-auto gap-1">
-                                <span className="bg-blue-400 w-[10%] overflow-auto text-wrap:wrap">{index+1}</span>
-                                <span className="bg-blue-500 w-[40%] overflow-y-scroll overflow-x-hidden text-wrap:wrap">{recordedURLs[index]}</span>
-                                <span className="bg-blue-600 w-[50%] overflow-y-scroll text-wrap:wrap">{text}</span>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    )
+      <Grid
+        style={{
+          height: 'auto',
+          minHeight: 200,
+          justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          background: '#f5f5f5'
+        }}
+        container
+      >
+        <Login />
+      </Grid>
+    );
+  }
+
+  return (
+    <Grid style={{ height: 'auto', width: 'auto' }} container>
+      <Home
+        addNewJourney={addNewJourneyInDb}
+        journeys={journeys}
+        updateSelectedJourney={updateSelectedJourney}
+        selectedJourney={selectedJourney}
+        user={user}
+        clearTable={clearSelectedJourneyRecordedTexts}
+      />
+    </Grid>
+  );
 };
 
 export default Popup;
