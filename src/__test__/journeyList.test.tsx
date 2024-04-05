@@ -2,6 +2,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import JourneyList from '../components/JourneyList';
 import { IJourney } from '../hooks/useJourney';
+// /** @jsxImportSource @testing-library/react */
 
 describe('JourneyList component', () => {
   const addNewJourneyMock = jest.fn();
