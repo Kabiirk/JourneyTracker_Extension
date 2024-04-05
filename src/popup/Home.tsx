@@ -33,7 +33,7 @@ const Home = ({
           journeys={journeys}
           updateSelectedJourney={updateSelectedJourney}
           selectedJourney={selectedJourney}
-          
+          data-testid="journey-list"
         />
       </Grid>
       <Grid item xs={12}>
