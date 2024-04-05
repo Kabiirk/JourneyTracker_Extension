@@ -117,7 +117,45 @@ describe('axiosHelper', () => {
         expect(result.error).toContain('error');
         expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining(config));
       });
-      
+
+      it('should handle Axios error and return parsed error message', async () => {
+        // Mock Axios error
+        const axiosError: AxiosError = {
+          isAxiosError: true,
+          config: { 
+            url: '/example',
+            headers: new AxiosHeaders()
+        },
+          toJSON: () => ({}), // This method is needed for AxiosError
+          name: 'AxiosError',
+          message: 'Request failed with status code 404',
+          response: {
+            status: 404,
+            statusText: 'Not Found',
+            headers: {},
+            config: { 
+              url: '/example',
+              headers: new AxiosHeaders()
+          } ,
+            data: { error: 'Resource not found' }
+          }
+        };
+  
+        // Mock the axios.isAxiosError function to always return true
+        (axios as any).isAxiosError = jest.fn((value: any) => value.isAxiosError === true);
+  
+        // Mock the rejected value with the Axios error
+        (mockedAxios as any).mockRejectedValueOnce(axiosError);
+    
+        // Call the function to test
+        const config: AxiosRequestConfig = { url: '/example', headers: {} };
+        const result: ApiResponse<any> = await axiosHelper<any>(config);
+    
+        // Assertions
+        expect(result.error).toContain('Resource not found');
+        expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining(config));
+      });
+  
 
   });
   
